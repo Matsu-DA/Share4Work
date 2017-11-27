@@ -1,0 +1,66 @@
+	// file to Binary String 作りかけ
+	public static void main(String args[]) throws IOException {
+		String fileName = "C:\\work\\就業時間早見表.xlsx";
+
+		EncodeBased64Binary ob = new EncodeBased64Binary();
+		byte[] fileBinary = ob.encodeFileToBinary(fileName);
+		String generateString = new String(Base64.getEncoder().encode(fileBinary));
+
+		String outputFilePath = "C:\\work\\output.txt";
+		ob.decodeBinaryToFile(outputFilePath, Base64.getEncoder().encode(fileBinary));
+		try {
+			File file = new File(outputFilePath);
+			FileWriter filewriter = new FileWriter(file);
+
+			filewriter.write("こんにちは");
+
+		} catch (IOException e) {
+			System.out.println(e);
+		} finally {
+
+			filewriter.close();
+		}
+
+	}
+  
+	private byte[] encodeFileToBinary(String fileName) throws IOException {
+		File file = new File(fileName);
+		byte[] bytes = loadFile(file);
+
+		return bytes;
+	}
+
+	/*
+	 * private String encodeFileToBase64Binary(String fileName) throws
+	 * IOException {
+	 *
+	 * File file = new File(fileName); byte[] bytes = loadFile(file); byte[]
+	 * encoded = Base64.encodeBase64(bytes); String encodedString = new
+	 * String(encoded);
+	 *
+	 * return encodedString; }
+	 */
+
+
+	private static byte[] loadFile(File file) throws IOException {
+		InputStream is = new FileInputStream(file);
+
+		long length = file.length();
+		if (length > Integer.MAX_VALUE) {
+			// File is too large
+		}
+		byte[] bytes = new byte[(int) length];
+
+		int offset = 0;
+		int numRead = 0;
+		while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+			offset += numRead;
+		}
+
+		if (offset < bytes.length) {
+			throw new IOException("Could not completely read file " + file.getName());
+		}
+
+		is.close();
+		return bytes;
+	}
